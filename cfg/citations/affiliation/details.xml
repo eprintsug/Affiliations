@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+
+<!-- 
+	Submitter Groups citation style (details)
+-->
+
+<cite:citation xmlns="http://www.w3.org/1999/xhtml" xmlns:cite="http://eprints.org/ep3/citation" xmlns:epc="http://eprints.org/ep3/control">
+
+<!-- Affiliation citations (details) -->
+
+<div class="ep_affiliation_citation" style="margin-bottom: 2em; margin-top: 2em;">
+  <div class="ep_affiliation_details_header">
+    <h2><epc:phrase ref="affiliation_fieldname_name"/></h2>
+  </div>
+  <div class="ep_affiliation_details_id">
+    <epc:print expr='affiliationid'/>
+  </div>
+  <div class="ep_affiliation_details_name">
+    <epc:choose>
+      <epc:when test="name"><epc:print expr='name'/></epc:when>
+      <epc:otherwise>UNSPECIFIED</epc:otherwise>
+    </epc:choose>
+  </div>
+</div>
+</cite:citation>

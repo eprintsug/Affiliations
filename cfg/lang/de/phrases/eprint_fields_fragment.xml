@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<!DOCTYPE phrases SYSTEM "entities.dtd">
+
+<epp:phrases xmlns="http://www.w3.org/1999/xhtml" xmlns:epp="http://eprints.org/ep3/phrase"
+  xmlns:epc="http://eprints.org/ep3/control">
+
+  <!-- Phrases for ZORA-736 Corresponding Author, Affiliation, Scopus Subject Areas -->
+  <epp:phrase id="eprint_fieldname_creators_correspondence">Korrespondenzautor?</epp:phrase>
+  <epp:phrase id="eprint_fieldhelp_creators_correspondence">Zeigt an, ob der Autor der Publikation der
+    Korrespondenzautor ist.</epp:phrase>
+  <epp:phrase id="eprint_fieldname_editors_correspondence">Korrespondenzherausgeber?</epp:phrase>
+  <epp:phrase id="eprint_fieldhelp_editors_correspondence">Zeigt an, ob der Herausgeber der Publikation
+    der verantwortliche Herausgeber ist.</epp:phrase>
+  <epp:phrase id="eprint_fieldname_examiners_correspondence">Korrespondenzautor?</epp:phrase>
+  <epp:phrase id="eprint_fieldhelp_examiners_correspondence">Zeigt an, ob der Referent der Publikation
+    der verantwortliche Referent ist.</epp:phrase>
+
+  <epp:phrase id="eprint_fieldname_creators_affiliation_ids">Affiliations-IDs</epp:phrase>
+  <epp:phrase id="eprint_fieldhelp_creators_affiliation_ids">Eine oder mehrere IDs der Organisationszugehörigkeit,
+    getrennt durch | (pipe-Zeichen). Die Affiliations-ID bezieht sich auf die primäre Affiliation ID in der 
+    Tabelle der Organisationszugehörigkeiten.</epp:phrase>
+  <epp:phrase id="eprint_fieldname_editors_affiliation_ids">Affiliations-IDs</epp:phrase>
+  <epp:phrase id="eprint_fieldhelp_editors_affiliation_ids">Eine oder mehrere IDs der Organisationszugehörigkeit,
+    getrennt durch | (pipe-Zeichen). Die Affiliations-ID bezieht sich auf die primäre Affiliation ID in der
+    Tabelle der Organisationszugehörigkeiten.</epp:phrase>
+  <epp:phrase id="eprint_fieldname_examiners_affiliation_ids">Affiliations-IDs</epp:phrase>
+  <epp:phrase id="eprint_fieldhelp_examiners_affiliation_ids">Eine oder mehrere IDs der Organisationszugehörigkeit,
+    getrennt durch | (pipe-Zeichen). Die Affiliations-ID bezieht sich auf die primäre Affiliation ID in der
+    Tabelle der Organisationszugehörigkeiten.</epp:phrase>
+
+  <epp:phrase id="eprint_fieldname_scopussubjects">Scopus Fachgebiete </epp:phrase>
+  <epp:phrase id="eprint_fieldhelp_scopussubjects">Scopus Fachgebiete der Publikation. Das Feld wird über 
+    die Scopus Abstract Retrieval API befüllt und wird von der Abteilung Internationale Beziehungen der 
+    UZH verwendet.</epp:phrase>
+
+</epp:phrases>

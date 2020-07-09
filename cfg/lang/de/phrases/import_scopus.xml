@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE phrases SYSTEM "entities.dtd">
+
+<epp:phrases xmlns="http://www.w3.org/1999/xhtml" xmlns:epp="http://eprints.org/ep3/phrase" xmlns:epc="http://eprints.org/ep3/control">
+  <epp:phrase id="Plugin/Import/ScopusAbstract:no_response">Unbekannte/r oder ungültige/r <epc:pin name="field"/> <epc:pin name="importid" />.<br/>
+    Keine oder ungültige Antwort von der Remote API erhalten.</epp:phrase>
+  <epp:phrase id="Plugin/Import/ScopusAbstract:incorrect_format">Inkorrektes Format der eingegebenen ID <epc:pin name="importid"/>.<br/>
+    Geben Sie bitte DOIs oder Scopus EIDs ein. Ein DOI beginnt immer mit "10.", die Scopus EID immer mit "2-s2.0-".</epp:phrase>
+  <epp:phrase id="Plugin/Import/ScopusAbstract:field_doi">DOI</epp:phrase>
+  <epp:phrase id="Plugin/Import/ScopusAbstract:field_scopus_cluster">Scopus EID</epp:phrase>
+  <epp:phrase id="Plugin/Import/ScopusAbstract:author_limit">Der Datensatz von Scopus enthält viele Autoren bzw. Editoren. Der Import wurde auf die ersten <epc:pin name="limit"/> Namen begrenzt; "et al" wurde hinzugefügt. Unter "Deposits verwalten" können Sie später dem importierten Datensatz weitere Namen hinzufügen.</epp:phrase>
+  <epp:phrase id="Plugin/Screen/Import/Scopus:help">Geben Sie einen DOI, eine Scopus ID, oder mehrere DOIs/EIDs ein, 
+    pro Zeile jeweils einen. Ein DOI beginnt immer mit "10.", die Scopus EID immer mit "2-s2.0-". Beispiele:<br/>
+    10.3205/zma001161<br/>
+    2-s2.0-85049403160
+  </epp:phrase>
+</epp:phrases>

@@ -1,0 +1,271 @@
+#!/usr/bin/perl -w -I/usr/local/eprints/perl_lib
+
+###############################################################################
+#
+# Update corresponding author flag for single authors.
+#
+###############################################################################
+#
+#  Copyright 2020 University of Zurich. All Rights Reserved.
+#
+#  Martin Brändle
+#  Zentrale Informatik
+#  Universität Zürich
+#  Stampfenbachstr. 73
+#  CH-8006 Zürich
+#  
+#  The plug-ins are free software; you can redistribute them and/or modify
+#  them under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#  
+#  The plug-ins are distributed in the hope that they will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with EPrints 3; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+######################################################################
+
+
+=pod
+
+=head1 NAME
+
+B<update_corresponding_author> - Update corresponding author flag for single authors.
+
+=head1 SYNOPSIS
+
+B<update_corresponding_author> I<repository_id> [B<options>] [I<eprint_id> I<eprint_id> ...]
+
+=head1 DESCRIPTION
+
+Descriptions
+
+=head1 ARGUMENTS
+
+=over 8
+
+=item [I<eprint_id> I<eprint_id> ...]
+
+A list of eprint_ids used for updating. If not specified, the complete eprint dataset will be used.
+
+=back
+
+=head1 OPTIONS
+
+=over 8
+
+=item B<--help>
+
+Print a brief help message and exit.
+
+=item B<--man>
+
+Print the full manual page and then exit.
+
+=item B<--quiet>
+
+Be vewwy vewwy quiet. This option will supress all output unless an error occurs.
+
+=item B<--verbose>
+
+Explain in detail what is going on.
+May be repeated for greater effect.
+
+=back
+
+=cut
+
+use strict;
+use warnings;
+
+use Getopt::Long;
+use Pod::Usage;
+
+use EPrints;
+
+#
+# Parameters for command line options
+#
+my $help = 0;
+my $man = 0;
+my $verbose = 0;
+my $quiet = 0;
+
+#
+# Parse the command line options
+#
+Getopt::Long::Configure("permute");
+GetOptions(
+	'help|?' => \$help,
+	'man' => \$man,
+	'verbose+' => \$verbose,
+	'quiet' => \$quiet,
+) || pod2usage( 2 );
+
+#
+# Print out help screens, if desired
+#
+pod2usage( 1 ) if $help;
+pod2usage( -exitstatus => 0, -verbose => 2 ) if $man;
+pod2usage( 2 ) if( scalar @ARGV < 1 ); 
+
+#
+# Configure verbosity
+#
+my $noise = 1;
+$noise = 0 if( $quiet );
+$noise = 1 + $verbose if( $verbose );
+
+#
+# Get an EPrints session and the live dataset
+#
+my $repoid = $ARGV[0];
+
+my $session = EPrints::Session->new( 1, $repoid, $noise );
+if ( !defined $session )
+{
+	print STDERR "Failed to load repository: $repoid\n";
+	exit 1;
+}
+
+my $repository = $session->get_repository;
+my $dataset = $session->get_repository->get_dataset( "eprint" );
+
+
+if ( !defined $dataset )
+{
+	print STDERR "Could not access the eprint dataset!\n";
+	$session->terminate;
+	exit 1;
+}
+
+
+my $param;
+$param->{verbose} = $verbose;
+
+#
+# Carry out the queries and gather the results
+#
+my $eplist;
+
+if ( scalar(@ARGV) > 1 )
+{
+	# for specific eprintids in the live archive
+	my $plist = "";
+	
+	for (my $i = 0; $i < scalar(@ARGV); $i++)
+	{
+		$plist = $plist . $ARGV[$i] . " ";
+	}
+
+	$plist = substr($plist,0,-1) if (length($plist) > 0);
+	
+	my $epexp = EPrints::Search->new(
+   		session => $session,
+   		dataset => $dataset,
+   		order => "eprintid",
+   	);
+   	
+   	$epexp->add_field(
+   		$dataset->get_field("eprintid"),
+   		$plist,
+   		"EQ",
+   		"ANY",
+   	);
+   	
+   	$eplist = $epexp->perform_search;
+}
+else
+{
+	$eplist = $dataset->search;
+}
+$eplist->map( \&process_records, $param );
+
+$session->terminate();
+
+exit;
+
+#
+# Update the correspondence flag for single authors
+#
+sub process_records
+{
+	my ($session, $dataset, $eprint, $param) = @_;
+
+	my $verbose = $param->{verbose};
+	my $update = 0;
+	
+	my $eprintid = $eprint->get_value( "eprintid" );
+	my $type = $eprint->get_value( "type" );
+	
+	if ( $type ne "edited_scientific_work" )
+	{
+		my $creators = $eprint->get_value( "creators" );
+		if (scalar(@$creators) == 1)
+		{
+			if ( !defined $creators->[0]->{correspondence} || $creators->[0]->{correspondence} ne 'TRUE' )
+			{
+				$creators->[0]->{correspondence} = 'TRUE';
+				$eprint->set_value( "creators", $creators );
+				$update = 1;
+			}
+		}
+	}
+	else
+	{
+		my $editors = $eprint->get_value( "editors" );
+		if (scalar(@$editors) == 1)
+		{
+			if ( !defined $editors->[0]->{correspondence} || $editors->[0]->{correspondence} ne 'TRUE' )
+			{
+				$editors->[0]->{correspondence} = 'TRUE';
+				$eprint->set_value( "editors", $editors );
+				$update = 1;
+			}
+		}
+	}
+	
+
+	$eprint->commit() if $update;
+	print STDOUT "Updated eprint $eprintid\n" if ($verbose && $update);
+	
+	return;
+}
+
+
+=head1 AUTHOR
+
+Martin Brändle <martin.braendle@uzh.ch>, Zentrale Informatik, University of Zurich
+
+=head1 COPYRIGHT
+
+=for COPYRIGHT BEGIN
+
+Copyright 2020- University of Zurich.
+
+=for COPYRIGHT END
+
+=for LICENSE BEGIN
+
+This file is part of ZORA based on EPrints L<http://www.eprints.org/>.
+
+EPrints is free software: you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+EPrints is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with EPrints.  If not, see L<http://www.gnu.org/licenses/>.
+
+=for LICENSE END
+

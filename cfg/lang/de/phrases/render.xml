@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+<!DOCTYPE phrases SYSTEM "entities.dtd">
+
+<epp:phrases xmlns="http://www.w3.org/1999/xhtml" xmlns:epp="http://eprints.org/ep3/phrase" xmlns:epc="http://eprints.org/ep3/control">
+
+  <epp:phrase id="page:fulltext"/>
+  <epp:phrase id="page:nofulltext">ZORA kann den Volltext nicht zur Verfügung stellen.</epp:phrase>
+  <epp:phrase id="page:abstract">Übersicht</epp:phrase>
+  <epp:phrase id="page:deposited_by">Hinterlegt von</epp:phrase>
+  <epp:phrase id="page:deposited_on">Hinterlegt am</epp:phrase>
+  <epp:phrase id="page:id_code">ID-Code</epp:phrase>
+  <epp:phrase id="page:invalid_user">UNGÜLTIGER BENUTZER</epp:phrase>
+  <epp:phrase id="page:latest_version"><p><em>Dies ist die aktuellste Version dieses Eintrags.</em></p></epp:phrase>
+  <epp:phrase id="page:not_latest_version">Es ist eine <epc:pin name="link">neuere Version dieses Eintrags</epc:pin> verfügbar.</epp:phrase>
+  <epp:phrase id="page:available_versions"><h3>Verfügbare Versionen dieses Eintrags</h3></epp:phrase>
+  <epp:phrase id="page:commentary_threads"><h3>Kommentar/Diskussions-Threads</h3></epp:phrase>
+
+  <epp:phrase id="page:abstract_intro"><h3>So wird die Übersichtsseite der Metadaten aussehen:</h3></epp:phrase>
+  <epp:phrase id="page:allfields_intro"><h3>Dies ist der gesamte Inhalt aller Felder dieses Eintrags:</h3></epp:phrase>
+  <epp:phrase id="page:suggestions_intro"><h3>Der Benutzer, der den Eintrag hinterlegte, machte die folgenden Kommentare und Vorschläge:</h3></epp:phrase>
+  <epp:phrase id="page:alert">Warnung</epp:phrase>
+  <epp:phrase id="page:edit_link">Für SubmitterInnen/EditorInnen: <epc:pin name="link">Metadaten bearbeiten</epc:pin></epp:phrase>
+  <epp:phrase id="page:request_changes">BenutzerInnen (bitte einloggen): <epc:pin name="link">Aktualisierung oder Korrekturen für diesen Eintrag vorschlagen</epc:pin></epp:phrase>
+
+  <!-- Article Network --> 
+  <epp:phrase id="page:article_network">Artikel Netzwerk</epp:phrase>
+
+  <!-- TrendTerms --> 
+  <epp:phrase id="page:trendterms">TrendTerms</epp:phrase>
+
+  <!-- Author Connections -->
+  <epp:phrase id="page:collaborations">Autoren, Institutionen, Netzwerke</epp:phrase>
+
+  <!-- Download Infos --> 
+  <epp:phrase id="page:file_download_heading">Download</epp:phrase>
+  <epp:phrase id="page:file_content">Inhalt: </epp:phrase>
+  <epp:phrase id="page:file_size">Gr&ouml;sse: </epp:phrase>
+  <epp:phrase id="page:file_type">Dateityp: </epp:phrase>
+  <epp:phrase id="page:file_language">Sprache: </epp:phrase>
+  <epp:phrase id="page:file_license">Lizenz: </epp:phrase>
+  <epp:phrase id="page:file_embargo">Gesperrt bis: </epp:phrase>
+  <epp:phrase id="page:file_download_download">Download</epp:phrase>
+  <epp:phrase id="page:file_download_title">Download PDF </epp:phrase>
+  <epp:phrase id="page:file_download4regusers_download">Download für registrierte Benutzer</epp:phrase>
+
+  <!-- Export Section --> 
+  <epp:phrase id="page:export_formate">Verfügbare Metadaten-Exportformate</epp:phrase>
+
+  <!-- Publisher- or funder-imposed embargos --> 
+  <epp:phrase id="page:embargo_status"><p>Diese Dokumente werden ab <epc:pin name="date"/> öffentlich zugänglich sein.</p></epp:phrase>
+  <epp:phrase id="page:embargo_may_apply">Es kann eine Sperrfrist gelten.</epp:phrase>
+
+  <epp:phrase id="page:zora_url">URL in ZORA</epp:phrase>
+
+  <!-- refereed and subtype -->
+  <epp:phrase id="page:refereed_set_refereed">, referiert</epp:phrase>
+  <epp:phrase id="page:refereed_set_notrefereed">, nicht referiert</epp:phrase>
+  <epp:phrase id="page:subtype_original">, Originalwerk</epp:phrase>
+  <epp:phrase id="page:subtype_further">, weiterer Beitrag</epp:phrase>
+
+  <!-- Link to publisher version -->
+  <epp:phrase id="page:publisher_url">Volltext des Verlags</epp:phrase>
+
+  <!-- Additional indexing section -->
+  <epp:phrase id="page:additional_indexing_title">Zusätzliche Erschliessung</epp:phrase>
+
+  <!-- Statistics section -->
+  <epp:phrase id="page:statistics_title">Statistiken</epp:phrase>
+  <epp:phrase id="page:citations_title">Zitationen</epp:phrase>
+  <epp:phrase id="page:altmetrics_title">Altmetrics</epp:phrase>
+  <epp:phrase id="page:downloads_title">Downloads</epp:phrase>
+  <epp:phrase id="page:times_cited_1">Zitation in</epp:phrase>
+  <epp:phrase id="page:times_cited_n">Zitationen in</epp:phrase>
+  <epp:phrase id="page:downloads_1">Download</epp:phrase>
+  <epp:phrase id="page:downloads_n">Downloads</epp:phrase>
+  <epp:phrase id="page:deposited">seit Hinterlegung am</epp:phrase>
+  <epp:phrase id="page:12m">seit 12 Monaten</epp:phrase>
+  <epp:phrase id="page:detail_stats">Detailierte Angaben</epp:phrase>
+
+  <!-- Permanent URL -->
+  <epp:phrase id="page:permanent_url">Permanente URL: </epp:phrase>
+
+  <!-- More Documents -->
+  <epp:phrase id="page:more_n"> weitere Dokumente </epp:phrase>
+  <epp:phrase id="page:more_1"> weiteres Dokument </epp:phrase>
+  
+  <!-- More / Less -->
+  <epp:phrase id="page:more_less"> 
+<script class="hidden-print" src="/zora_zwonull/scripts/read_less_more/readmore_zora_de.js">
+</script>
+  </epp:phrase>
+
+  <!-- Copy2Clipboard -->
+  <epp:phrase id="page:copy2clipboard_src">zora_clipboard_de.js</epp:phrase>
+  <epp:phrase id="page:copy2clipboard_text">Kopieren</epp:phrase>
+
+  <!-- Maintenance Link Text -->
+  <epp:phrase id="page:maintenance_linktext">Aktuelle Wartung</epp:phrase>
+
+  <!-- Footer: Contact, Dataprotection, etc.  -->
+  <epp:phrase id="page:contact_oai_team">
+	<h3>Kontakt</h3>
+        <address>
+                  Universität Zürich <br/>
+                  Hauptbibliothek <br/>
+                  Open Access <br/>
+                  Strickhofstrasse 39 <br/>
+                  CH - 8057 Zürich <br/>
+                  EMail: <a href="mailto:oai@hbz.uzh.ch">oai@hbz.uzh.ch</a> <br/>
+        </address>
+  </epp:phrase>
+  <epp:phrase id="page:data_protection">
+	<h3>Datenrichtlinien</h3>
+	<ul id="data_policy">
+		<li><a href="https://www.uzh.ch/de/privacy.html">Datenschutzerklärung der UZH</a></li>
+		<li><a href="https://www.hbz.uzh.ch/de/open-access-und-open-science/zora/zora-policy.html">ZORA Policy</a></li>
+		<li><a href="https://www.zora.uzh.ch/accessibility.html">Barrierefreiheit</a></li>
+	</ul>
+  </epp:phrase>
+   <epp:phrase id="page:third_party_data">
+    <p>Microsoft Academic Daten betrieben von <a href="https://azure.microsoft.com/en-us/services/cognitive-services/academic-knowledge/" target="_blank">Microsoft Academic Knowledge API</a><br/>
+    Scopus Zitations- und Affiliationsdaten betrieben von <a href="https://dev.elsevier.com/sc_apis.html" target="_blank">Scopus Search API</a><br/>
+    Web of Science Daten betrieben von <a href="http://ipscience-help.thomsonreuters.com/LAMRService/WebServicesOverviewGroup/overview.html" target="_blank">Clarivate Analytics Links Article Match Service</a><br/>
+    Semantisch ähnliche Publikationen bereitgestellt durch <a href="https://core.ac.uk" target="_blank">CORE</a> Recommender</p>
+  </epp:phrase>
+
+   <!-- ZORA-116 ORCID : Source field -->
+  <epp:phrase id="page:orcid_source">Quelle der ORCID ID: </epp:phrase>
+  <epp:phrase id="page:orcid_source:author">Autor</epp:phrase>
+  <epp:phrase id="page:orcid_source:pubmed">Import aus PubMed</epp:phrase>
+  <epp:phrase id="page:orcid_source:crossref">Import aus Crossref</epp:phrase>
+  <epp:phrase id="page:orcid_source:orcid">Import aus ORCID Record (authentifiziert)</epp:phrase>
+  <epp:phrase id="page:orcid_source:wos">Import aus Web of Science</epp:phrase>
+  <epp:phrase id="page:orcid_source:unknown">Unbekannt</epp:phrase>
+  <!-- ZORA-498 and ZORA-116 ORCID : Link to ORCID Record -->
+  <epp:phrase id="page:orcid_source:orcid_profile">ORCID Record von </epp:phrase>
+
+  <!-- ZORA-498 document embargo -->
+  <epp:phrase id="page:until">bis</epp:phrase>
+
+  <!-- ZORA-640 SFX Button -->
+  <epp:phrase id="sfx_alt_explanation">Volltext in einer Bibliothek erhalten</epp:phrase>
+
+  <!-- ZORA 586 CORE Recommender -->
+  <epp:phrase id="page:recommendations">Ähnliche Publikationen</epp:phrase>
+
+  <!-- ZORA-666 SFX OpenURL Link -->
+  <epp:phrase id="page:sfx_link"><epc:pin name="link">Volltext</epc:pin> in einer Bibliothek erhalten</epp:phrase>
+
+  <!-- ZORA-679 PhD thesis / habilitation subtype -->
+  <epp:phrase id="page:thesis_subtype_monographical"> (monographisch)</epp:phrase>
+  <epp:phrase id="page:thesis_subtype_cumulative"> (kumulativ)</epp:phrase>
+  <epp:phrase id="page:relateditems_heading">Zugehörige Werke</epp:phrase>
+  <epp:phrase id="page:relateditems_description_haspart">Diese <epc:pin name="subtype" /> <epc:pin name="type" />
+    enthält die folgenden Teile:</epp:phrase>
+  <epp:phrase id="page:relateditems_description_ispartof">Dieses Dokument ist Teil des folgenden Eintrags:</epp:phrase>
+  <epp:phrase id="page:monographical">monographische</epp:phrase>
+  <epp:phrase id="page:cumulative">kumulative</epp:phrase>
+
+  <!-- ZORA 738 OA status locks -->
+  <epp:phrase id="page:oa_lock_gold"><img src="/images/oa_lock_gold.png" class="oa_lock_gold" title="Gold Open Access" alt="Gold Open Access"/></epp:phrase>
+  <epp:phrase id="page:oa_lock_green"><img src="/images/oa_lock_green.png" class="oa_lock_green" title="Green Open Access" alt="Green Open Access"/></epp:phrase>
+  <epp:phrase id="page:oa_lock_hybrid"><img src="/images/oa_lock_hybrid.png" class="oa_lock_hybrid" title="Hybrid Open Access" alt="Hybrid Open Access" /></epp:phrase>
+  <epp:phrase id="page:oa_lock_closed"><img src="/images/oa_lock_closed.png" class="oa_lock_closed" title="Kein Open Access: Download ist nur für UZH Angehörige nach Login möglich" alt="Kein Open Access: Download ist nur für UZH Angehörige nach Login möglich" /></epp:phrase>
+
+   <!-- Phrases for Help page -->
+  <epp:phrase id="help:oa_types">
+    <p>ZORA-Einträge mit einem Volltextdokument sind mit einem Schloss markiert, das ihren Open Access Status anzeigt:</p>
+    <div class="oa_status_float"><img src="/images/oa_lock_green.png" class="oa_lock_green" title="Green Open Access" alt="Green Open Access"/></div>
+    <p class="oa_status_help">Grün - bezieht sich auf die Selbstarchivierung von eingereichten oder akzeptierten Manuskripten in Repositorien.</p>
+    <div class="oa_status_clear" />
+    <div class="oa_status_float"><img src="/images/oa_lock_gold.png" class="oa_lock_gold" title="Gold Open Access" alt="Gold Open Access"/></div>
+    <p class="oa_status_help">Gold - bezieht sich auf Publikationen in frei zugänglichen Open-Access-Zeitschriften oder Büchern.</p>
+    <div class="oa_status_clear" />
+    <div class="oa_status_float"><img src="/images/oa_lock_hybrid.png" class="oa_lock_hybrid" title="Hybrid Open Access" alt="Hybrid Open Access" /></div>
+    <p class="oa_status_help">Hybrid - auch Paid Open Access genannt, bezieht sich auf Abonnementzeitschriften mit Open Access für einzelne Artikel, die in der Regel bei Zahlung einer Gebühr durch den Autor, die Institution oder den
+        Forschungsförderer an den Verlag oder die Zeitschrift frei gestellt werden.</p>
+    <div class="oa_status_clear" />
+    <div class="oa_status_float"><img src="/images/oa_lock_closed.png" class="oa_lock_closed" title="Kein Open Access: Download ist nur für UZH Angehörige nach Login möglich" alt="Kein Open Access: Download ist nur für UZH Angehörige nach Login möglich" /></div>
+    <p class="oa_status_help">Kein Open Access: Aufgrund von Embargofristen ist der Download nur für Angehörige der UZH nach Login möglich.</p>
+    <div class="oa_status_clear" />
+    <p>Die Open-Access-Art von ZORA-Einträgen wird entweder automatisch anhand verschiedener Informationsquellen
+     bestimmt, wie zum Beispiel mit Hilfe der <a href="http://www.jdb.uzh.ch" target="_blank">JDB</a>, dem
+     <a href="http://doaj.org/" target="_blank">Directory of Open Access Journals</a>,
+     <a href="http://unpaywall.org/" target="_blank">Unpaywall</a> und ZORA Artikelinformationen selbst, oder manuell
+     durch das Open-Access-Team der HBZ. Beachten Sie, dass die Open-Access-Art keine statische Grösse ist. Sie
+     kann sich mit der Zeit ändern, wenn beispielsweise das Embargo einer Publikation abläuft.</p>
+  </epp:phrase>
+
+  <!-- ZORA-736 Affilations -->
+  <epp:phrase id="page:corresponding_author">Korrespondenzautor/in</epp:phrase>
+  <epp:phrase id="page:readmore:collaborations">
+    <script class="hidden-print" src="/zora_zwonull/scripts/read_less_more/readmore_de.js">
+    </script>
+    <script>readmoreZORA("#collaborations");</script>
+  </epp:phrase>
+
+</epp:phrases>
+

@@ -1,0 +1,567 @@
+#!/usr/bin/perl -w -I/usr/local/eprints/perl_lib
+
+###############################################################################
+#
+# Import Scopus Affiliations
+#
+# This script updates eprint items with affiliation data and Scopus subject 
+# area classifications using the Scopus Abstract Retrieval API.
+#
+###############################################################################
+#
+#  Copyright 2019 University of Zurich. All Rights Reserved.
+#  
+#  The plug-ins are free software; you can redistribute them and/or modify
+#  them under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#  
+#  The plug-ins are distributed in the hope that they will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#  
+#  You should have received a copy of the GNU General Public License
+#  along with EPrints 3; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+######################################################################
+
+
+=pod
+
+=head1 NAME
+
+B<import_scopus_affiliations> - Update EPrints affiliation data and subject areas 
+from Scopus
+
+=head1 SYNOPSIS
+
+B<import_scopus_affiliations> I<repository_id> [B<options>] [I<eprint_id> I<eprint_id> ...]
+
+=head1 DESCRIPTION
+
+This script updates eprint items with affiliation data and Scopus subject area 
+classifications using the Scopus Abstract Retrieval API. 
+
+=head1 OPTIONS
+
+=over 8
+
+=item B<--test>
+
+Test mode. Outputs the data, but does not update anything.
+
+=item B<--batch>
+
+Updates a batch of I<quota> items. The start eprintid of the batch to be
+processed is stored in I<eprints_root>/var/scopus_batch.txt . At the end of
+batch, this file is updated with the start eprintid of the next batch.
+The default quota is 9500, but can be changed in the script code. It must be
+compliant with the quota of the Abstract Retrieval API imposed in 
+https://dev.elsevier.com/api_key_settings.html . Mutually exclusive with 
+--repair and --update.
+
+=item B<--repair>
+
+Updates a batch of I<quota> items for which an author match problem had been
+detected in the last run. The start eprintid of the batch to be
+processed is stored in I<eprints_root>/var/scopus_repair.txt . At the end of
+batch, this file is updated with the start eprintid of the next batch.
+The default quota is 9500, but can be changed in the script code. It must be
+compliant with the quota of the Abstract Retrieval API imposed in 
+https://dev.elsevier.com/api_key_settings.html . Mutually exclusive with 
+--batch and --update.
+
+
+=item B<--update>
+
+Updates only new eprint items added the day before. Mutually exclusive with 
+--batch and --repair.
+
+=item B<--force>
+
+Forces the update of the eprint items, even if affiliations had been assigned 
+already before.
+
+=item B<--help>
+
+Print a brief help message and exit.
+
+=item B<--man>
+
+Print the full manual page and then exit.
+
+=item B<--quiet>
+
+Be vewwy vewwy quiet. This option will supress all output unless an error occurs.
+
+=item B<--verbose>
+
+Explain in detail what is going on.
+May be repeated for greater effect.
+
+=back
+
+=cut
+
+use strict;
+use warnings;
+use utf8;
+
+use Getopt::Long;
+use Pod::Usage;
+use Encode qw(encode decode);
+
+use EPrints;
+
+
+#
+# Global variables
+#
+my $report = {};
+
+# Weekly API query quota (maximum is 10'000, but leave some room for tests and imports)
+my $quota = 9500;  
+
+#
+# Parameters for command line options
+#
+my $help = 0;
+my $man = 0;
+my $verbose = 0;
+my $quiet = 0;
+my $batch = 0;
+my $repair = 0;
+my $force_update = 0;
+my $update = 0;
+my $test = 0;
+
+#
+# Parse the command line options
+#
+Getopt::Long::Configure("permute");
+GetOptions(
+	'test' => \$test,
+	'batch' => \$batch,
+	'repair' => \$repair,
+	'update' => \$update,
+	'force' => \$force_update,
+	'help|?' => \$help,
+	'man' => \$man,
+	'verbose+' => \$verbose,
+	'quiet' => \$quiet,
+) || pod2usage( 2 );
+
+#
+# Print out help screens, if desired
+#
+pod2usage( 1 ) if $help;
+pod2usage( -exitstatus => 0, -verbose => 2 ) if $man;
+pod2usage( 2 ) if( scalar @ARGV < 1 ); 
+
+#
+# Configure verbosity
+#
+my $noise = 1;
+$noise = 0 if( $quiet );
+$noise = 1 + $verbose if( $verbose );
+
+# Check batch/update options
+if ( ($batch && $update) || ($batch && $repair) || ($repair && $update) ||
+     (!$batch && !$repair && !$update && scalar(@ARGV) < 2) )
+{
+	print STDERR "Please specify either --batch, --repair or --update, or at least one eprintid\n";
+	pod2usage( 1 );
+	exit 1;
+}
+
+#
+# Get an EPrints session and the live dataset
+#
+my $repoid = $ARGV[0];
+
+my $session = EPrints::Session->new( 1, $repoid, $noise );
+if ( !defined $session )
+{
+	print STDERR "Failed to load repository: $repoid\n";
+	exit 1;
+}
+
+my $repository = $session->get_repository;
+
+my $dataset = $session->get_repository->get_dataset( "eprint" );
+
+if ( !defined $dataset )
+{
+	print STDERR "Could not access the eprint dataset!\n";
+	$session->terminate;
+	exit 1;
+}
+
+#
+# Create a plugin  
+#
+my $saplugin;
+$saplugin = $session->plugin( 'Import::ScopusAbstract' );
+
+if ( !defined($saplugin) )
+{
+	$session->terminate();
+	exit 1;
+}
+
+my $param;
+$saplugin->{param}->{verbose} = $verbose;
+$param->{plugin} = $saplugin;
+$param->{report} = $report;
+$param->{verbose} = $verbose;
+$param->{force} = $force_update;
+
+my $eplist;
+
+if ( scalar(@ARGV) > 1 )
+{
+	# for specific eprintids in the live archive
+	my $plist = "";
+	
+	for (my $i = 1; $i < scalar(@ARGV); $i++)
+	{
+		$plist = $plist . $ARGV[$i] . " ";
+	}
+
+	$plist = substr($plist,0,-1) if (length($plist) > 0);
+	
+	my $epexp = EPrints::Search->new(
+   		session => $session,
+   		dataset => $dataset,
+   		order => "eprintid",
+   	);
+   	
+	$epexp->add_field(
+		$dataset->get_field("eprintid"),
+		$plist,
+		"EQ",
+		"ANY",
+	);
+   	
+   	$eplist = $epexp->perform_search;
+}
+else
+{
+	#
+	# Updates a batch of <quota> items
+	#
+	if ($batch)
+	{
+		my $batchstart;
+		my $batchids = "";
+		
+		my $batchexp = get_basic_searchexp( $session, $dataset );
+   		
+		$batchexp->add_field(
+			$dataset->get_field("eprint_status"),
+   			"archive",
+			"EQ",
+			"ANY",
+		);
+   		
+   		my $batchlist = $batchexp->perform_search;
+   		
+   		my $basedir = $session->get_repository->get_conf( "base_path" ) . '/var';
+   		my $batchfile = $basedir . '/scopus_batch.txt';
+   	
+   		if (-f $batchfile)
+		{
+   			open( my $batchfh, '<', $batchfile ) or die "Cannot read file '$batchfile' [$!]\n";
+   			while (my $line = <$batchfh>)
+   			{
+   				chomp $line;
+   				$batchstart = $line;
+   			}
+   			close($batchfh); 
+   		}
+   		else
+   		{
+   			$batchstart = 0;
+   		}
+   		
+   		$param->{batchstart} = $batchstart;
+   		$param->{batchend} = 0;
+   		$param->{batchids} = $batchids; 
+   		$param->{quota} = $quota;
+   		$param->{counter} = 0;
+   		
+   		$batchlist->map( \&process_batch, $param );
+   		
+   		$batchlist->dispose();
+   		
+   		$batchids = $param->{batchids};
+   		
+   		my $epexp = get_basic_searchexp( $session, $dataset );
+   		
+   		$epexp->add_field(
+   			$dataset->get_field("eprintid"),
+   			$batchids,
+   			"EQ",
+   			"ANY",
+   		);
+   	
+   		$eplist = $epexp->perform_search;
+   		
+   		if ( !$test )
+   		{
+   			open(my $batchfh, '>', $batchfile) or die "Cannot write file '$batchfile' [$!]\n";
+   			print $batchfh $param->{batchend};
+   			close($batchfh);
+   		}
+	}
+	#
+	# Repairs a batch of <quota> items
+	#
+	elsif ($repair)
+	{
+		my $batchstart;
+		my $batchids = "";
+		
+		my $batchexp = get_basic_searchexp( $session, $dataset );
+   		
+		$batchexp->add_field(
+			$dataset->get_field("eprint_status"),
+   			"archive",
+			"EQ",
+			"ANY",
+		);
+		
+		$batchexp->add_field(
+			$dataset->get_field("suggestions"),
+			"Scopus affiliation",
+			"IN",
+			"ALL",
+		);
+   		
+   		my $batchlist = $batchexp->perform_search;
+   		
+   		my $basedir = $session->get_repository->get_conf( "base_path" ) . '/var';
+   		my $batchfile = $basedir . '/scopus_repair.txt';
+   	
+   		if (-f $batchfile)
+		{
+   			open( my $batchfh, '<', $batchfile ) or die "Cannot read file '$batchfile' [$!]\n";
+   			while (my $line = <$batchfh>)
+   			{
+   				chomp $line;
+   				$batchstart = $line;
+   			}
+   			close($batchfh); 
+   		}
+   		else
+   		{
+   			$batchstart = 0;
+   		}
+   		
+   		$param->{batchstart} = $batchstart;
+   		$param->{batchend} = 0;
+   		$param->{batchids} = $batchids; 
+   		$param->{quota} = $quota;
+   		$param->{counter} = 0;
+   		$param->{force} = 1;
+   		
+   		$batchlist->map( \&process_batch, $param );
+   		
+   		$batchlist->dispose();
+   		
+   		$batchids = $param->{batchids};
+   		
+   		my $epexp = get_basic_searchexp( $session, $dataset );
+   		
+   		$epexp->add_field(
+   			$dataset->get_field("eprintid"),
+   			$batchids,
+   			"EQ",
+   			"ANY",
+   		);
+   	
+   		$eplist = $epexp->perform_search;
+   		
+   		if ( !$test )
+   		{
+   			open(my $batchfh, '>', $batchfile) or die "Cannot write file '$batchfile' [$!]\n";
+   			print $batchfh $param->{batchend};
+   			close($batchfh);
+   		}
+		
+	}
+	#
+	# Updates new eprint items added the day before.
+	#
+	elsif ($update)
+	{
+		# Work out the date for which we are doing the update
+		my ( $update_year, $update_month, $update_day, $update_hour, $update_minute, $update_second ) = Date::Calc::Today_and_Now();
+		
+		# Convert the update date to GMT since EPrints functions return GMT
+		my ( $delta_year, $delta_month, $delta_day, $delta_hour, $delta_minute, $delta_second, $dst ) = Date::Calc::Timezone();
+	
+		( $update_year, $update_month, $update_day, $update_hour, $update_minute, $update_second ) = Date::Calc::Add_Delta_YMDHMS(
+			$update_year, $update_month, $update_day, $update_hour, $update_minute, $update_second,
+			-$delta_year, -$delta_month, -$delta_day, -$delta_hour, -$delta_minute, -$delta_second,
+		);
+		
+		my @ids = get_eprintids_for_yesterday( $session, $dataset, $update_year, $update_month, $update_day );
+		
+		if (scalar @ids > 0)
+		{
+			$eplist = EPrints::List->new( 
+				repository => $session->get_repository, 
+				dataset => $dataset,
+				ids => \@ids
+			);
+		}
+	}
+	else
+	{
+		# we should not get into here, but who knows?
+	}
+}
+
+if ( defined $eplist )
+{
+	my $count = $eplist->count();
+	if ( !$test )
+	{
+		print STDOUT "Updating $count eprint items\n";
+		$eplist->map( \&update_item, $param );
+	}
+	else
+	{
+		print STDOUT "Test: Would update $count eprint items\n";
+		$eplist->map( \&test_item, $param );
+	}
+	$eplist->dispose();
+}
+else
+{
+	print STDOUT "Test: No eprint items found to update\n";
+}
+
+$session->terminate();
+exit;
+
+
+
+sub process_batch
+{
+	my ($session, $dataset, $eprint, $param) = @_;
+	
+	my $ids = $param->{batchids};
+	my $batchstart = $param->{batchstart};
+	my $force = $param->{force};
+	
+	return if $param->{counter} >= $param->{quota};
+	
+	my $eprintid = $eprint->get_value( "eprintid" );
+	return if $eprintid <= $batchstart;
+	
+	my $eid = $eprint->get_value( "scopus_cluster" );
+	my $doi = $eprint->get_value( "doi" );
+	my $creators_affiliation_ids = $eprint->get_value( "creators_affiliation_ids" );
+	my $editors_affiliation_ids = $eprint->get_value( "editors_affiliation_ids" );
+	
+	return if ( !$force && defined $creators_affiliation_ids && scalar( @$creators_affiliation_ids ) > 0 );
+	return if ( !$force && defined $editors_affiliation_ids && scalar( @$editors_affiliation_ids ) > 0 );
+	
+	if ((defined $eid && $eid ne '') || (defined $doi && $doi =~ /^10\./ ) )
+	{
+		$param->{counter}++;
+		$ids = $ids . $eprintid . " ";
+	}
+	
+	$param->{batchend} = $eprintid + 1;
+	$param->{batchids} = $ids;
+	
+	return;
+}
+
+#
+# Updates the item with Scopus affiliation data and Scopus subject areas.
+#
+sub update_item
+{
+	my ($session, $dataset, $eprint, $param) = @_;
+	
+	my $plugin = $param->{plugin};
+	my $report = $param->{report};
+	my $verbose = $param->{verbose};
+	
+	my $eprintid = $eprint->get_value( "eprintid" );
+	
+	print STDOUT "Updating item $eprintid\n" if $verbose;
+	my $success = $plugin->update_authors_subject( $eprint );
+	
+	return;
+}
+
+#
+# Prints the item that would be updated.
+#
+sub test_item
+{
+	my ($session, $dataset, $eprint, $param) = @_;
+	
+	my $eprintid = $eprint->get_value( "eprintid" );
+	print STDOUT "Would update eprint item $eprintid\n";
+	
+	return;
+}
+
+#
+# Creates the standard search expression. If required, slices for specific datestamps
+# are added later in get_eprintids_for_yesterday
+#
+sub get_basic_searchexp
+{
+	my ( $session, $dataset ) = @_;
+
+	my $searchexp = EPrints::Search->new(
+		session => $session,
+		dataset => $dataset,
+		order => "eprintid",
+	);
+	
+	return $searchexp;
+}
+
+#
+# Get an array of eprint IDs that were deposited yesterday
+#
+sub get_eprintids_for_yesterday
+{
+	my ( $session, $dataset, $year, $month, $day ) = @_;
+
+	# get yesterday's date
+	my ( $yesterday_year, $yesterday_month, $yesterday_day ) = Date::Calc::Add_Delta_Days( $year, $month, $day, -1 );
+
+	# find all of the eprints added yesterday
+	my $newexp = get_basic_searchexp( $session, $dataset );
+	
+	$newexp->add_field(
+		$dataset->get_field("eprint_status"),
+		"archive",
+		"EQ",
+		"ANY",
+	);
+	
+	$newexp->add_field( 
+		$dataset->get_field( "datestamp" ), 
+		sprintf( "%04d-%02d-%02d", $yesterday_year, $yesterday_month, $yesterday_day )
+	);
+	
+	my $list = $newexp->perform_search;
+	my @ids = @{$list->ids};
+
+	# clean up
+	$list->dispose;
+
+	return @ids;
+}
