@@ -1,6 +1,8 @@
 # Affiliations
 
-## Affiliations adds a dataset, plugins and methods to render, import and export author affiliations
+## Author affiliations for EPrints
+
+Affiliations adds a dataset, plugins and methods to render, import and export author affiliations
 
 It provides
 - a generic affiliation dataset for affiliations from Scopus, ROR, or Grid
